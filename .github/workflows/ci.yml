@@ -1,0 +1,16 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: TODO - Setup Python and run backend tests
+        run: |
+          echo "Intentionally failing CI to prompt candidates to fix workflow."
+          exit 1
