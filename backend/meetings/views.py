@@ -29,6 +29,10 @@ class MeetingViewSet(viewsets.ModelViewSet):
     queryset = Meeting.objects.all().annotate(note_count=Count("notes")).order_by("-created_at")
     serializer_class = MeetingSerializer
 
+    def perform_create(self, serializer):
+        meeting = serializer.save()
+        log.info("meeting_created meeting_id=%s title=%s", meeting.id, meeting.title)
+
     @action(detail=True, methods=["get", "post"], url_path="notes")
     def notes(self, request, pk=None):
         meeting = self.get_object()
@@ -48,6 +52,12 @@ class MeetingViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         note = serializer.save(meeting=meeting)
+        log.info(
+            "note_created meeting_id=%s note_id=%s author=%s",
+            meeting.id,
+            note.id,
+            note.author,
+        )
 
         return Response(
             NoteSerializer(note).data,
@@ -65,13 +75,12 @@ class MeetingViewSet(viewsets.ModelViewSet):
 
         notes = meeting.notes.all()
         text = "\n".join(note.text for note in notes)
+        note_count = notes.count()
 
         log.info(
-            "summarize_requested",
-            extra={
-                "meeting_id": meeting.id,
-                "note_count": notes.count(),
-            },
+            "summarize_requested meeting_id=%s note_count=%s",
+            meeting.id,
+            note_count,
         )
 
         Thread(

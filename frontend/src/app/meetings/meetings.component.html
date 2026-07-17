@@ -1,0 +1,40 @@
+<h2>Meetings</h2>
+
+<div *ngIf="loading">Loading...</div>
+
+<div *ngIf="error">
+    {{ error }}
+</div>
+
+<table *ngIf="!loading && !error" border="1" cellpadding="8">
+    <tr>
+        <th>Title</th>
+        <th>Started</th>
+        <th>Notes</th>
+        <th>Summary</th>
+    </tr>
+
+    <tr *ngFor="let meeting of meetings">
+        <td>
+            <a [routerLink]="['/meetings', meeting.id]">
+                {{ meeting.title }}
+            </a>
+        </td>
+
+        <td>
+            {{ meeting.started_at | date: 'medium' }}
+        </td>
+
+        <td>
+            {{ meeting.note_count }}
+        </td>
+
+        <td>
+            <span *ngIf="meeting.latest_summary">
+                {{ meeting.latest_summary.status }}
+            </span>
+
+            <span *ngIf="!meeting.latest_summary"> — </span>
+        </td>
+    </tr>
+</table>

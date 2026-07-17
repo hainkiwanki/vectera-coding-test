@@ -1,0 +1,91 @@
+<div *ngIf="loading">Loading...</div>
+
+<div *ngIf="error">
+    {{ error }}
+</div>
+
+<div *ngIf="meeting">
+    <h2>{{ meeting.title }}</h2>
+
+    <p>
+        <strong>Started:</strong>
+        {{ meeting.started_at | date: 'medium' }}
+    </p>
+
+    <p>
+        <strong>Notes:</strong>
+        {{ meeting.note_count }}
+    </p>
+
+    <p>
+        <strong>Summary:</strong>
+
+        <span *ngIf="meeting.latest_summary">
+            {{ meeting.latest_summary.status }}
+        </span>
+
+        <span *ngIf="!meeting.latest_summary"> None </span>
+    </p>
+</div>
+<hr />
+<hr />
+
+<h3>Add Note</h3>
+
+<div>
+    <label> Author </label>
+
+    <br />
+
+    <input [(ngModel)]="author" placeholder="Author" />
+</div>
+
+<br />
+
+<div>
+    <label> Note </label>
+
+    <br />
+
+    <textarea [(ngModel)]="text" rows="4" cols="60" placeholder="Write your note..."></textarea>
+</div>
+
+<br />
+
+<button (click)="addNote()" [disabled]="!author || !text">Add Note</button>
+
+<hr />
+
+<h3>Notes</h3>
+
+<div *ngIf="loadingNotes">Loading notes...</div>
+
+<div *ngIf="!loadingNotes && notes.length === 0">No notes yet.</div>
+
+<div *ngFor="let note of notes">
+    <strong>{{ note.author }}</strong>
+
+    <small> ({{ note.created_at | date: 'short' }}) </small>
+
+    <p>{{ note.text }}</p>
+
+    <hr />
+</div>
+<hr />
+
+<h3>Summary</h3>
+
+<button (click)="generateSummary()" [disabled]="loadingSummary || summary?.status === 'pending'">Generate Summary</button>
+
+<div *ngIf="summary">
+    <p>
+        <strong>Status:</strong>
+        {{ summary.status }}
+    </p>
+
+    <div *ngIf="summary.content">
+        <p>
+            {{ summary.content }}
+        </p>
+    </div>
+</div>
