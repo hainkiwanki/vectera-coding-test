@@ -5,12 +5,12 @@
 - **No authentication** — the API is open; suitable for a local coding test, not production.
 - **Meetings are created via the API** (or Django admin). The frontend lists and manages existing meetings but has no create-meeting form.
 - **Single-user, local dev** — Docker runs Postgres + backend; Angular dev server proxies `/api` to `http://localhost:8000`.
-- **AI is stubbed** — `services/ai.py` is used as-is (~1s sleep, dummy string). No external LLM integration.
-- **Async = in-process thread** — sufficient to simulate pending → ready polling without Celery/Redis.
+- **AI is stubbed** — `services/ai.py` is used as-is (~1s sleep, dummy string).
+- **Async = in-process thread** — sufficient to simulate pending → ready polling
 
 ---
 
-## Key choices & trade-offs
+## Choices & trade-offs
 
 ### Backend
 
@@ -24,7 +24,7 @@
 
 ### Frontend
 
-- **Flat `AppModule` structure** — components, services, and typed models live in separate folders under `src/app/`. No feature modules; keeps the setup simple for a small app.
+- **Flat `AppModule` structure** — components, services, and typed models live in separate folders under `src/app/`. No feature modules; keeps the setup simple for a small app. Appropriate for the small scope of the assignment.
 - **Typed API models** — `Meeting`, `Note`, `Summary`, and pagination interfaces mirror the backend responses.
 - **`MeetingService` for all HTTP calls** — components handle presentation only.
 - **Reload after mutations** — after adding a note or completing a summary, the meeting is refetched so `note_count` and summary badge stay in sync. Trades extra requests for simpler, always-correct UI state.
@@ -41,11 +41,11 @@
 
 ## Deviations from the spec
 
-| Spec | Implementation | Why |
-|------|----------------|-----|
-| Meeting list "newest first" | Queryset orders by `-created_at` | Chose record creation time; model Meta uses `-started_at` — functionally similar for seeded data. |
-| Skeleton had separate `list_notes` / `add_note` | Combined into one `notes` action | Same URL/methods, less duplication. |
-| Full meeting workflow in UI | No create-meeting form | API supports `POST /api/meetings/`; UI focuses on list, detail, notes, and summary per spec scope. |
+| Spec                                            | Implementation                   | Why                                                                                                |
+| ----------------------------------------------- | -------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Meeting list "newest first"                     | Queryset orders by `-created_at` | Chose record creation time; model Meta uses `-started_at` — functionally similar for seeded data.  |
+| Skeleton had separate `list_notes` / `add_note` | Combined into one `notes` action | Same URL/methods, less duplication.                                                                |
+| Full meeting workflow in UI                     | No create-meeting form           | API supports `POST /api/meetings/`; UI focuses on list, detail, notes, and summary per spec scope. |
 
 No other intentional deviations. All required endpoints, models, pagination, health check, async summary flow, and frontend pages are implemented.
 
@@ -57,7 +57,7 @@ Given more time:
 
 - Align meeting list ordering on `started_at` consistently (queryset + model Meta).
 - Add a create-meeting form on the frontend.
-- Replace `setInterval` polling with RxJS (`timer` + `switchMap` + `takeUntil`).
+- Replace setInterval polling with an RxJS interval() pipeline to better align with Angular's reactive programming model.
 - Resume polling on page load when a summary is already `pending`.
 - Enforce duplicate-summary prevention on the backend (frontend only disables the button).
 - Replace the background thread with Celery or similar for production-grade async jobs.
@@ -69,12 +69,12 @@ Given more time:
 
 ## Time spent
 
-| Area | Time |
-|------|------:|
-| Backend API, models & serializers | ~1.5 hours |
-| Backend tests & logging | ~30 minutes |
-| Frontend (list, detail, polling) | ~2 hours |
-| Frontend test & polish | ~45 minutes |
-| GitHub Actions & documentation | ~15 minutes |
+| Area                              |        Time |
+| --------------------------------- | ----------: |
+| Backend API, models & serializers |  ~1.5 hours |
+| Backend tests & logging           | ~30 minutes |
+| Frontend (list, detail, polling)  |    ~2 hours |
+| Frontend test & polish            | ~45 minutes |
+| GitHub Actions & documentation    | ~15 minutes |
 
 **Total:** ~5 hours
