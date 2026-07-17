@@ -1,6 +1,11 @@
 from rest_framework import serializers
 from .models import Meeting, Note, Summary
 
+class NoteCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Note
+        fields = ["author", "text"]
+
 class NoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note

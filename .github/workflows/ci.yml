@@ -1,16 +1,28 @@
 name: CI
 
 on:
-  push:
-  pull_request:
+    push:
+    pull_request:
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+    build-and-test:
+        runs-on: ubuntu-latest
 
-      - name: TODO - Setup Python and run backend tests
-        run: |
-          echo "Intentionally failing CI to prompt candidates to fix workflow."
-          exit 1
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: '3.12'
+
+            - name: Install backend dependencies
+              working-directory: backend
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install -r requirements.txt
+
+            - name: Run backend tests
+              working-directory: backend
+              run: |
+                  pytest
